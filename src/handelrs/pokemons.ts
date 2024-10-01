@@ -16,3 +16,18 @@ export async function getPokemons(request: Request, response: Response) {
     response.status(500).json({ error: "Internal Server Error" });
   }
 }
+export async function getPokemonByID(request: Request, response: Response) {
+  try {
+    const pokemons = await prisma.pokemon.findMany({
+      include: {
+        base: true,
+        image: true,
+      },
+    });
+
+    response.json(pokemons);
+  } catch (error) {
+    console.error("Error fetching Pokémon:", error);
+    response.status(500).json({ error: "Internal Server Error" });
+  }
+}
