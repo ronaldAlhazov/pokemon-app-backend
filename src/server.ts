@@ -1,17 +1,12 @@
-import express, { Request, Response } from "express";
+import express from "express";
+import cors from "cors";
+import router from "./routes/pokemons.routes";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const bodyParser = require("express").json;
 
-// Middleware to parse JSON
-app.use(express.json());
+app.use(cors());
+app.use(bodyParser());
+app.use("/", router);
 
-// Example route
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello World ");
-});
-
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+module.exports = app;

@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE "Pokemon" ALTER COLUMN "nameEnglish" DROP NOT NULL,
+ALTER COLUMN "nameJapanese" DROP NOT NULL,
+ALTER COLUMN "nameChinese" DROP NOT NULL,
+ALTER COLUMN "nameFrench" DROP NOT NULL,
+ALTER COLUMN "species" DROP NOT NULL,
+ALTER COLUMN "description" DROP NOT NULL;
