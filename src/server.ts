@@ -7,6 +7,6 @@ const bodyParser = require("express").json;
 
 app.use(cors());
 app.use(bodyParser());
-app.use("/", router);
+app.use("/api", router);
 
 module.exports = app;

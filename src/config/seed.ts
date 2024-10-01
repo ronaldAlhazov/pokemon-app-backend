@@ -4,7 +4,7 @@ import path from "path";
 
 const prisma = new PrismaClient();
 
-async function main() {
+async function uploadData() {
   await prisma.pokemon.deleteMany({});
   await prisma.image.deleteMany({});
   await prisma.base.deleteMany({});
@@ -57,7 +57,7 @@ async function main() {
   console.log("Data imported successfully");
 }
 
-main()
+uploadData()
   .catch((e) => {
     console.error(e);
     process.exit(1);
