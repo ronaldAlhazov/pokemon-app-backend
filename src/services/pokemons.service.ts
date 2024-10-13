@@ -26,7 +26,6 @@ export async function fetchPokemons(
         throw new Error(`User with username "${username}" not found.`);
       }
 
-      const userPokemonIds = user.pokemons.map((id) => id);
       filterCriteria.id = { in: user.pokemons };
     }
 
@@ -119,26 +118,6 @@ export async function fetchUserPokemons(username: string) {
   }
 }
 
-export async function getUserByUsername(username: string) {
-  try {
-    // Find the user with the specified username
-    const user = await prisma.user.findUnique({
-      where: {
-        username: username, // Using the username argument
-      },
-    });
-
-    // If the user is not found, you can return null or throw an error
-    if (!user) {
-      throw new Error(`User with username '${username}' not found.`);
-    }
-
-    return user; // Return the user details
-  } catch (error) {
-    console.error("Error fetching user:", error);
-    throw new Error("Error fetching user: " + error);
-  }
-}
 export async function addPokemonToUser(username: string, pokemonId: number) {
   try {
     const pokemon = await prisma.pokemon.findUnique({
