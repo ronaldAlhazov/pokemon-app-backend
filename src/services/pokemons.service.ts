@@ -94,29 +94,6 @@ export async function fetchPokemons(
     throw new Error("Error fetching Pokémon: " + error);
   }
 }
-export async function fetchUserPokemons(username: string) {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { username },
-    });
-
-    if (!user) {
-      throw new Error(`User with username ${username} not found`);
-    }
-
-    const pokemons = await prisma.pokemon.findMany({
-      where: { pokemonID: { in: user.pokemons } },
-      include: {
-        base: true,
-        image: true,
-      },
-    });
-
-    return pokemons;
-  } catch (error) {
-    throw new Error("Error fetching user's Pokémon: " + error);
-  }
-}
 
 export async function addPokemonToUser(username: string, pokemonId: number) {
   try {

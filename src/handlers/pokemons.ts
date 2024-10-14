@@ -28,50 +28,6 @@ export async function getPokemons(
   }
 }
 
-export async function getPokemonByID(request: Request, response: Response) {
-  const { id } = request.params;
-  const numericId = Number(id);
-
-  if (isNaN(numericId)) {
-    response.status(400).send({ message: "Id should be number!" });
-    return;
-  }
-
-  try {
-    const pokemon = await prisma.$queryRaw`
-          SELECT 
-              p.id, 
-              p."nameEnglish", 
-              p."description",
-              p.type, 
-              b."HP", 
-              b."Attack", 
-              b."Defense", 
-              b."Sp_Attack" AS "SpAttack", 
-              b."Sp_Defense" AS "SpDefense", 
-              b."Speed", 
-              i."sprite", 
-              i."thumbnail", 
-              i."hires" 
-          FROM "Pokemon" p
-          JOIN "Base" b ON p."baseId" = b.id
-          JOIN "Image" i ON p."imageId" = i.id
-          WHERE p.id = ${numericId}
-      `;
-
-    if (!pokemon) {
-      response
-        .status(400)
-        .send({ message: `There is no pokemon with this id :${numericId}` });
-      return;
-    }
-
-    response.json(pokemon);
-  } catch (error) {
-    handleServerError(response, error, "Error fetching Pokémon");
-  }
-}
-
 export async function addUserPokemon(
   request: Request,
   response: Response
@@ -98,4 +54,70 @@ export async function addUserPokemon(
   } catch (error) {
     handleServerError(response, error);
   }
+}
+
+export async function getOpponent(
+  request: Request,
+  response: Response
+): Promise<void> {
+  const { username } = request.query;
+
+  if (!username) {
+    response.status(400).json({ error: "Username is required" });
+    return;
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { username: username as string },
+  });
+
+  if (!user) {
+    response
+      .status(404)
+      .json({ error: `User with username "${username}" not found.` });
+    return;
+  }
+
+  const availablePokemons = await prisma.pokemon.findMany({
+    where: {
+      AND: [
+        { base: { is: {} } },
+        { id: { notIn: user.pokemons } },
+        { base: { HP: { not: null } } },
+        { base: { Attack: { not: null } } },
+        { base: { Defense: { not: null } } },
+        { base: { SpAttack: { not: null } } },
+        { base: { SpDefense: { not: null } } },
+        { base: { Speed: { not: null } } },
+      ],
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (availablePokemons.length === 0) {
+    response
+      .status(404)
+      .json({ error: "No available opponents with base stats." });
+    return;
+  }
+
+  const randomIndex = Math.floor(Math.random() * availablePokemons.length);
+  const opponentPokemonId = availablePokemons[randomIndex].id;
+
+  const opponentPokemon = await prisma.pokemon.findUnique({
+    where: { id: opponentPokemonId },
+    include: {
+      base: true,
+      image: true,
+    },
+  });
+
+  if (!opponentPokemon) {
+    response.status(404).json({ error: "Opponent not found." });
+    return;
+  }
+
+  response.json(opponentPokemon);
 }
