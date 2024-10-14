@@ -1,10 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import * as fs from "fs";
 import path from "path";
-
+import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
-async function main() {
+async function uploadData() {
   await prisma.pokemon.deleteMany({});
   await prisma.image.deleteMany({});
   await prisma.base.deleteMany({});
@@ -53,11 +53,21 @@ async function main() {
       },
     });
   }
+  const hashedPassword = await bcrypt.hash("pikachu123", 10);
+  console.log(hashedPassword);
+  await prisma.user.create({
+    data: {
+      username: "roni23",
+      email: "roni23@mail.com",
+      password: hashedPassword,
+      pokemons: [1, 4, 7],
+    },
+  });
 
   console.log("Data imported successfully");
 }
 
-main()
+uploadData()
   .catch((e) => {
     console.error(e);
     process.exit(1);
