@@ -43,3 +43,11 @@ model Image {
   hires     String
   pokemon   Pokemon? @relation
 }
+
+model User {
+  id       Int    @id @default(autoincrement())
+  username String @unique
+  email    String @unique
+  password String
+  pokemons Int[]
+}
