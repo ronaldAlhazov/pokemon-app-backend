@@ -1,4 +1,3 @@
-import e from "express";
 import prisma from "../config/prisma";
 import { SortBy, sortByOptions, sortType } from "../constants/constants";
 
@@ -54,8 +53,8 @@ export async function fetchPokemons(
               valueB = b.nameEnglish;
               break;
             case SortBy.NAME_ZA:
-              valueA = b.nameEnglish;
-              valueB = a.nameEnglish;
+              valueA = a.nameEnglish;
+              valueB = b.nameEnglish;
               break;
             case SortBy.POWER_HL:
               valueA = a.base.Attack;
